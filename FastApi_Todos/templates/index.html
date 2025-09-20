@@ -107,6 +107,15 @@
             });
         }
 
+        async function toggleTodo(id) {
+            const response = await fetch(`/todos/${id}/toggle`, {
+                method: 'PATCH'
+            });
+            if (response.ok) {
+                fetchTodos();
+            }
+        }
+
         async function editTodo(id) {
             const title = prompt('Enter new title:');
             const description = prompt('Enter new description:');
