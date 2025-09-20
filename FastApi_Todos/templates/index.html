@@ -63,15 +63,46 @@
             todoList.innerHTML = '';
             todos.forEach(todo => {
                 const li = document.createElement('li');
-                li.textContent = `${todo.title}: ${todo.description} (Completed: ${todo.completed})`;
+                li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                
+                const todoContent = document.createElement('div');
+                todoContent.className = 'todo-content';
+                todoContent.textContent = `${todo.title}: ${todo.description}`;
+                todoContent.onclick = () => toggleTodo(todo.id);
+                
+                const buttonContainer = document.createElement('div');
+                buttonContainer.className = 'todo-buttons';
+                
+                const toggleButton = document.createElement('button');
+                toggleButton.className = 'toggle-btn';
+                toggleButton.textContent = todo.completed ? 'Undo' : 'Complete';
+                toggleButton.onclick = (e) => {
+                    e.stopPropagation();
+                    toggleTodo(todo.id);
+                };
+                
                 const editButton = document.createElement('button');
+                editButton.className = 'edit-btn';
                 editButton.textContent = 'Edit';
-                editButton.onclick = () => editTodo(todo.id);
+                editButton.onclick = (e) => {
+                    e.stopPropagation();
+                    editTodo(todo.id);
+                };
+                
                 const deleteButton = document.createElement('button');
+                deleteButton.className = 'delete-btn';
                 deleteButton.textContent = 'Delete';
-                deleteButton.onclick = () => deleteTodo(todo.id);
-                li.appendChild(editButton);
-                li.appendChild(deleteButton);
+                deleteButton.onclick = (e) => {
+                    e.stopPropagation();
+                    deleteTodo(todo.id);
+                };
+                
+                buttonContainer.appendChild(toggleButton);
+                buttonContainer.appendChild(editButton);
+                buttonContainer.appendChild(deleteButton);
+                
+                li.appendChild(todoContent);
+                li.appendChild(buttonContainer);
                 todoList.appendChild(li);
             });
         }
