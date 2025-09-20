@@ -63,6 +63,17 @@ def delete_todo(todo_id: int):
     todos = [todo for todo in todos if todo["id"] != todo_id]
     save_todos(todos)
     return {"message": "To-Do item deleted"}
+    
+# To-Do 완료 상태 토글 (1단계 개선)
+@app.patch("/todos/{todo_id}/toggle", response_model=dict)
+def toggle_todo_completion(todo_id: int):
+    todos = load_todos()
+    for todo in todos:
+        if todo["id"] == todo_id:
+            todo["completed"] = not todo["completed"]
+            save_todos(todos)
+            return {"message": f"Todo {todo_id} completion status toggled to {todo['completed']}"}
+    raise HTTPException(status_code=404, detail="To-Do item not found")
 
 # HTML 파일 서빙
 @app.get("/", response_class=HTMLResponse)
