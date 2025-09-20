@@ -1,6 +1,6 @@
 # FastAPI Todo Application
 
-> **DevOps 연습용 프로젝트** - 오픈소스 SW개발 수업에서 DevOps 실습을 위해 개발된 FastAPI 기반 Todo 애플리케이션
+> **DevOps 연습용 프로젝트** - 오픈소스 SW개발 수업에서 DevOps 실습을 위해 개발된 FastAPI 기반 Todo 애플리케이션이다.
 
 ##  프로젝트 개요
 
