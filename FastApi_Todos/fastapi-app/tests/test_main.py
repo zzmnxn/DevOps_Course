@@ -16,7 +16,26 @@ def setup_and_teardown():
     # 테스트 후 정리
     save_todos([])
 
+# test_main.py 파일에 추가
 
+def test_read_root():
+    """
+    루트 엔드포인트('/')에 대한 GET 요청이 성공적으로 HTML을 반환하는지 테스트합니다.
+    """
+    # 1. '/' 엔드포인트에 GET 요청
+    response = client.get("/")
+    
+    # 2. 응답 상태 코드 확인 (200 OK)
+    assert response.status_code == 200
+    
+    # 3. 응답 Content-Type 확인 (HTML)
+    assert "text/html" in response.headers["content-type"]
+    
+    # 4. 응답 내용에 index.html의 고유한 내용이 포함되어 있는지 확인
+    # '<h1>✨ Todo List ✨</h1>'는 index.html에 있는 제목입니다.
+    assert "<h1>✨ Todo List ✨</h1>" in response.text
+
+    
 def test_get_todos_empty():
     response = client.get("/todos")
     assert response.status_code == 200
