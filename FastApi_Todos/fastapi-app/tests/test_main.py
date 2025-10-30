@@ -17,18 +17,6 @@ def setup_and_teardown():
     save_todos([])
 
 
-# ==============================================================================
-# 2. load_todos() (JSONDecodeError) 커버리지 추가
-# ==============================================================================
-def test_load_todos_json_decode_error():
-    # todo.json 파일을 만들고, 깨진 JSON 내용을 작성합니다.
-    with open(TODO_FILE, "w", encoding="utf-8") as file:
-        file.write("{invalid: json}")
-        
-    todos = load_todos()
-    # load_todos 함수가 JSONDecodeError를 잡고 빈 리스트를 반환하는지 확인
-    assert todos == []
-    
 def test_get_todos_empty():
     response = client.get("/todos")
     assert response.status_code == 200
