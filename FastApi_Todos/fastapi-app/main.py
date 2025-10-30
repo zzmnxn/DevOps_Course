@@ -78,6 +78,9 @@ def toggle_todo_completion(todo_id: int):
 # HTML 파일 서빙
 @app.get("/", response_class=HTMLResponse)
 def read_root():
-    with open("templates/index.html", "r", encoding="utf-8") as file:
+    base_dir = os.path.dirname(__file__)
+    html_file_path = os.path.join(base_dir, "templates", "index.html")
+    
+    with open(html_file_path, "r", encoding="utf-8") as file:
         content = file.read()
     return HTMLResponse(content=content)
