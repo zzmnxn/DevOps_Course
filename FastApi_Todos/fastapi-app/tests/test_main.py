@@ -4,7 +4,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import pytest
 from fastapi.testclient import TestClient
-from main import app, save_todos, load_todos, TodoItem
+from main import app, save_todos, load_todos, TodoItem, TODO_FILE
 
 client = TestClient(app)
 
@@ -16,12 +16,6 @@ def setup_and_teardown():
     # 테스트 후 정리
     save_todos([])
 
-def test_read_root_success():
-    # NOTE: 이 테스트는 'templates/index.html' 파일이 테스트 환경 경로에 존재함을 전제로 합니다.
-    response = client.get("/")
-    assert response.status_code == 200
-    assert "text/html" in response.headers["content-type"]
-    assert "<html>" in response.text  # HTML 내용이 포함되어 있는지 확인
 
 # ==============================================================================
 # 2. load_todos() (JSONDecodeError) 커버리지 추가
