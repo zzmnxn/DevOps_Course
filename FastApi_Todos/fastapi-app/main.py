@@ -3,8 +3,12 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import json
 import os
+from prometheus_fastapi_instrumentator import Instrumentator
+
 
 app = FastAPI()
+
+Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 #To-Do 항목 모델
 class TodoItem(BaseModel):
