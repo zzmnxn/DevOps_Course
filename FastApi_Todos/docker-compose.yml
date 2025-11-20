@@ -8,7 +8,8 @@ services:
     container_name: FastApi-app
     ports:
       - "5001:8005"
-
+    networks:
+      - loadtest-net
   sonarqube:
     image: sonarqube:latest
     container_name: sonarqube
@@ -21,7 +22,8 @@ services:
       - sonarqube_data:/opt/sonarqube/data
       - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
-
+    networks:
+      - loadtest-net
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -32,7 +34,8 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--web.listen-address=:8090"
-
+    networks:
+      - loadtest-net
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -43,7 +46,8 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
       # Grafana는 기본 포트 3000을 유지합니다.
-  
+    networks:
+      - loadtest-net
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -51,17 +55,34 @@ services:
       - "7100:8100"
     command:
       - "--web.listen-address=:8100"
+    networks:
+      - loadtest-net
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
-    ports:
-      - "8095:8080"
+jmeter:
+    build:
+      context: ./jmeter
+      dockerfile: Dockerfile
+    container_name: jmeter
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+      - ./jmeter:/jmeter
+    command:
+      - jmeter
+      - -n
+      - -t
+      - /jmeter/fastapi_test_plan.jmx
+      - -l
+      - /jmeter/results.jtl
+      - -JBASE_URL=http://fastapi-app:5001
+      - -Jjmeter.save.saveservice.output_format=csv
+      - -e
+      - -o
+      - /jmeter/report
+    networks:
+      - loadtest-net
+
+networks:
+  loadtest-net:
+    driver: bridge
 
 volumes:
   sonarqube_conf:
@@ -69,3 +90,4 @@ volumes:
   sonarqube_logs:
   sonarqube_extensions:
   grafana-data:
+
