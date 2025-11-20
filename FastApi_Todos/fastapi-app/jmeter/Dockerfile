@@ -1,5 +1,5 @@
 # Dockerfile for ARM (aarch64) JMeter image
-FROM openjdk:11-jre-slim
+FROM openjdk:11-jre-slim-bullseye
 
 # Set JMeter version and environment variables
 ENV JMETER_VERSION=5.4.1
