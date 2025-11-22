@@ -1,6 +1,14 @@
 global:
   scrape_interval: 15s
 
+# InfluxDB로 메트릭 전송 설정
+remote_write:
+  - url: "http://influxdb:8086/api/v1/prom/write?db=prometheus&u=admin&p=admin123"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 10000
+
 scrape_configs:
   # FastApi 애플리케이션의 메트릭 수집
   - job_name: 'fastapi'
