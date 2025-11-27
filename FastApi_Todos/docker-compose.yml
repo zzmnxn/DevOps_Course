@@ -75,7 +75,7 @@ services:
   #   networks:
   #     - loadtest-net
 
-jmeter:
+  jmeter:
     build:
       context: ./jmeter
       dockerfile: Dockerfile
@@ -96,7 +96,7 @@ jmeter:
       - /jmeter/report
     networks:
       - loadtest-net
-
+      
   loki:
     image: grafana/loki:latest
     container_name: loki
