@@ -102,10 +102,16 @@ services:
     container_name: loki
     ports:
       - "3100:3100" 
+    logging:
+     driver: loki
+     options:
+       loki-url: "http://loki:3100/loki/api/v1/push"
+       loki-external-labels: job=fastapi
     networks:
       - loadtest-net
   promtail:
     image: grafana/promtail:latest
+    user: "0"
     container_name: promtail
     volumes:
       # Promtail 설정 파일 마운트 (이 파일이 Loki 연결 및 로그 소스를 정의)
