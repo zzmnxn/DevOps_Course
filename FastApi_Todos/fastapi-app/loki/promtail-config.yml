@@ -1,0 +1,36 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  # Loki 서비스 이름과 포트 지정
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: containers
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: containerlogs
+  docker_sd_configs:
+    - host: unix:///var/run/docker.sock
+      refresh_interval: 5s
+  relabel_configs:
+    # Docker 레이블에서 컨테이너 이름 가져오기
+    - source_labels: ['__meta_docker_container_name']
+      regex: '/(.*)'
+      target_label: 'container'
+    
+    # fastapi-app 컨테이너를 필터링하고 레이블을 추가
+    - source_labels: ['container']
+      regex: 'FastApi-app' # docker-compose.yml에 지정한 container_name 사용
+      action: keep
+    - source_labels: ['container']
+      target_label: 'application'
+      replacement: 'fastapi' # Grafana에서 사용할 레이블 값
+    - source_labels: ['__meta_docker_log_stream']
+      target_label: 'logstream'

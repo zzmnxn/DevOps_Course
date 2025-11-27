@@ -104,6 +104,19 @@ services:
       - "3100:3100" 
     networks:
       - loadtest-net
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      # Promtail 설정 파일 마운트 (이 파일이 Loki 연결 및 로그 소스를 정의)
+      - ./loki/promtail-config.yml:/etc/promtail/config.yml
+      # Promtail이 도커 소스 로그를 읽을 수 있게 마운트
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      # 도커 소켓 마운트 (컨테이너 메타데이터 접근용)
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - loadtest-net
 
 networks:
   loadtest-net:
