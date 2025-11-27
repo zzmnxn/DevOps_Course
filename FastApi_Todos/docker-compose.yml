@@ -57,23 +57,23 @@ services:
       - "--web.listen-address=:8100"
     networks:
       - loadtest-net
-  influxdb:
-    image: influxdb:2.7
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
-      - DOCKER_INFLUXDB_INIT_ORG=myorg
-      - DOCKER_INFLUXDB_INIT_BUCKET=metrics
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
-    networks:
-      - loadtest-net
+  # influxdb:
+  #   image: influxdb:2.7
+  #   container_name: influxdb
+  #   ports:
+  #     - "8086:8086"
+  #   environment:
+  #     - DOCKER_INFLUXDB_INIT_MODE=setup
+  #     - DOCKER_INFLUXDB_INIT_USERNAME=admin
+  #     - DOCKER_INFLUXDB_INIT_PASSWORD=admin123
+  #     - DOCKER_INFLUXDB_INIT_ORG=myorg
+  #     - DOCKER_INFLUXDB_INIT_BUCKET=metrics
+  #     - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+  #   volumes:
+  #     - influxdb-data:/var/lib/influxdb2
+  #     - influxdb-config:/etc/influxdb2
+  #   networks:
+  #     - loadtest-net
 
 jmeter:
     build:
@@ -89,11 +89,19 @@ jmeter:
       - /jmeter/fastapi_test_plan.jmx
       - -l
       - /jmeter/results.jtl
-      - -JBASE_URL=http://fastapi-app:5001
+      - -JBASE_URL=http://fastapi-app:8005
       - -Jjmeter.save.saveservice.output_format=csv
       - -e
       - -o
       - /jmeter/report
+    networks:
+      - loadtest-net
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100" 
     networks:
       - loadtest-net
 
