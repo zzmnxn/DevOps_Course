@@ -34,3 +34,5 @@ scrape_configs:
       replacement: 'fastapi' # Grafana에서 사용할 레이블 값
     - source_labels: ['__meta_docker_log_stream']
       target_label: 'logstream'
+    - source_labels: ['__meta_docker_container_log_path']
+      target_label: '__path__'
