@@ -6,33 +6,37 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  # Loki 서비스 이름과 포트 지정
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
-- job_name: containers
-  static_configs:
-  - targets:
-      - localhost
-    labels:
-      job: containerlogs
-  docker_sd_configs:
-    - host: unix:///var/run/docker.sock
-      refresh_interval: 5s
-  relabel_configs:
-    # Docker 레이블에서 컨테이너 이름 가져오기
-    - source_labels: ['__meta_docker_container_name']
-      regex: '/(.*)'
-      target_label: 'container'
-    
-    # fastapi-app 컨테이너를 필터링하고 레이블을 추가
-    - source_labels: ['container']
-      regex: 'FastApi-app' # docker-compose.yml에 지정한 container_name 사용
-      action: keep
-    - source_labels: ['container']
-      target_label: 'application'
-      replacement: 'fastapi' # Grafana에서 사용할 레이블 값
-    - source_labels: ['__meta_docker_log_stream']
-      target_label: 'logstream'
-    - source_labels: ['__meta_docker_container_log_path']
-      target_label: '__path__'
+  - job_name: containers
+    # static_configs 제거 (docker_sd_configs와 충돌 방지)
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+        
+    relabel_configs:
+      # 1. Docker 레이블에서 컨테이너 이름 추출 (예: /FastApi-app -> FastApi-app)
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: 'container'
+      
+      # 2. job 라벨 강제 부여 (이게 없으면 검색이 어려움)
+      - target_label: 'job'
+        replacement: 'containerlogs'
+
+      # 3. FastAPI 앱 필터링 및 application 라벨 부여
+      # (디버깅을 위해 일단 모든 컨테이너를 수집하고 싶다면 아래 action: keep 줄을 주석 처리하세요)
+      - source_labels: ['container']
+        regex: 'FastApi-app' 
+        action: keep 
+        
+      - source_labels: ['container']
+        target_label: 'application'
+        replacement: 'fastapi'
+
+      # 4. 로그 스트림 및 경로 설정 (필수)
+      - source_labels: ['__meta_docker_log_stream']
+        target_label: 'logstream'
+      - source_labels: ['__meta_docker_container_log_path']
+        target_label: '__path__'
